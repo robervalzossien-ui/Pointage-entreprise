@@ -25,7 +25,7 @@
       enTraitement = true;
       document.getElementById("statut").innerText = "Verification...";
       fetch(`${APPS_SCRIPT_URL}?id=${idEmploye}&device_key=${farh123}`)
-        .then(r => r.text())
+        .then(r => r.text()) 
         .then(html => {
           const texte = html.replace(/<[^>]*>/g, " ");
           document.getElementById("statut").innerText = texte;
