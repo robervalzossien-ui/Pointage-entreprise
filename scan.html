@@ -7,52 +7,23 @@
   <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
     body { font-family: Arial; text-align: center; padding: 20px; }
-    #resultat iframe { width: 100%; max-width: 400px; height: 220px; border: none; margin-top: 20px; }
-    button { margin-top: 15px; padding: 12px 24px; font-size: 16px; }
   </style>
 </head>
 <body>
   <h2>Scanner de pointage</h2>
   <div id="reader" style="width:100%; max-width:400px; margin:0 auto;"></div>
-  <div id="resultat" style="display:none;">
-    <iframe id="frameResultat"></iframe>
-    <br>
-    <button onclick="reinitialiser()">Scanner à nouveau</button>
-  </div>
 
   <script>
     // Remplacez par votre URL et votre cle secrete
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbyh3V9O3MZqaERXUClLoZD_mMTLfVXN1I5NHpFfmQQRcp_cYDsmYjylQ6rIunyHMsgL/exec/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbyh3V9O3MZqaERXUClLoZD_mMTLfVXN1I5NHpFfmQQRcp_cYDsmYjylQ6rIunyHMsgL/exec";
     const DEVICE_KEY = "farh123";
 
-    let scanner;
-    let enTraitement = false;
-
     function onScanSuccess(idEmploye) {
-      if (enTraitement) return;
-      enTraitement = true;
-
-      scanner.clear();
-      document.getElementById("reader").style.display = "none";
-      document.getElementById("resultat").style.display = "block";
-
       const url = `${APPS_SCRIPT_URL}?id=${encodeURIComponent(idEmploye)}&device_key=${encodeURIComponent(farh123)}`;
-      document.getElementById("frameResultat").src = url;
-
-      // Retour automatique au scan apres 6 secondes
-      setTimeout(reinitialiser, 6000);
+      window.location.href = url;
     }
 
-    function reinitialiser() {
-      document.getElementById("resultat").style.display = "none";
-      document.getElementById("reader").style.display = "block";
-      enTraitement = false;
-      scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-      scanner.render(onScanSuccess);
-    }
-
-    scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-    scanner.render(onScanSuccess);
+    new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 }).render(onScanSuccess);
   </script>
 </body>
 </html>
