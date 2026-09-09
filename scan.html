@@ -20,15 +20,18 @@
 
    var scanner = new Html5QrcodeScanner("reader", { fps: 10 });
 
-    function onScanSuccess(idEmploye) {
-      if (dejaTraite) { return; }
-      dejaTraite = true;
+  function onScanSuccess(idEmploye) {
+  if (dejaTraite) { return; }
+  dejaTraite = true;
 
-      scanner.clear();
+  var url = APPS_SCRIPT_URL + "?id=" + encodeURIComponent(idEmploye) + "&device_key=" + encodeURIComponent(DEVICE_KEY);
 
-      var url = APPS_SCRIPT_URL + "?id=" + encodeURIComponent(idEmploye) + "&device_key=" + encodeURIComponent(DEVICE_KEY);
-      window.location.href = url;
-    }
+  scanner.clear().then(function() {
+    window.location.href = url;
+  }).catch(function() {
+    window.location.href = url;
+  });
+}
 
     scanner.render(onScanSuccess);
   </script>
