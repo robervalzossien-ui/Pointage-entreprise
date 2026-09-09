@@ -18,7 +18,7 @@
     var DEVICE_KEY = "farh123";
     var dejaTraite = false;
 
-    var scanner = new Html5QrcodeScanner("reader", { fps: 10, facingMode: "environment" });
+   var scanner = new Html5QrcodeScanner("reader", { fps: 10 });
 
     function onScanSuccess(idEmploye) {
       if (dejaTraite) { return; }
