@@ -7,34 +7,30 @@
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     body { font-family: Arial; text-align: center; padding: 20px; }
-    #log { font-size: 11px; color: #888; text-align: left; max-width: 400px; margin: 15px auto; white-space: pre-wrap; }
   </style>
 </head>
 <body>
   <h2>Scanner de pointage</h2>
   <div id="reader" style="width:100%; max-width:400px; margin:0 auto;"></div>
-  <div id="log"></div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbyh3V9O3MZqaERXUClLoZD_mMTLfVXN1I5NHpFfmQQRcp_cYDsmYjylQ6rIunyHMsgL/exec";
-    const DEVICE_KEY = "farh123";
+    var APPS_SCRIPT_URL = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbyh3V9O3MZqaERXUClLoZD_mMTLfVXN1I5NHpFfmQQRcp_cYDsmYjylQ6rIunyHMsgL/exec";
+    var DEVICE_KEY = "farh123";
+    var dejaTraite = false;
 
-    const logDiv = document.getElementById("log");
-    let compteur = 0;
+    var scanner = new Html5QrcodeScanner("reader", { fps: 10, facingMode: "environment" });
 
     function onScanSuccess(idEmploye) {
-      logDiv.innerText = "DETECTE : " + idEmploye;
-      const url = `${APPS_SCRIPT_URL}?id=${encodeURIComponent(idEmploye)}&device_key=${encodeURIComponent(DEVICE_KEY)}`;
+      if (dejaTraite) { return; }
+      dejaTraite = true;
+
+      scanner.clear();
+
+      var url = APPS_SCRIPT_URL + "?id=" + encodeURIComponent(idEmploye) + "&device_key=" + encodeURIComponent(DEVICE_KEY);
       window.location.href = url;
     }
 
-    function onScanFailure(erreur) {
-      compteur++;
-      logDiv.innerText = "Tentatives de scan : " + compteur + " (aucun QR détecté pour le moment)";
-    }
-
-    const scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 }, false);
-    scanner.render(onScanSuccess, onScanFailure);
+    scanner.render(onScanSuccess);
   </script>
 </body>
 </html>
