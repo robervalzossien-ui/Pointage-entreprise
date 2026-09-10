@@ -19,18 +19,29 @@
     var dejaTraite = false;
 
    var scanner = new Html5QrcodeScanner("reader", { fps: 10 });
-
-  function onScanSuccess(idEmploye) {
+function onScanSuccess(idEmploye) {
   if (dejaTraite) { return; }
   dejaTraite = true;
 
   var url = APPS_SCRIPT_URL + "?id=" + encodeURIComponent(idEmploye) + "&device_key=" + encodeURIComponent(DEVICE_KEY);
 
-  scanner.clear().then(function() {
-    window.location.href = url;
-  }).catch(function() {
-    window.location.href = url;
-  });
+  function arreterCameraEtPartir() {
+    // Coupe manuellement tous les flux video actifs, au cas ou clear() ne l'ait pas fait
+    var videos = document.querySelectorAll("video");
+    videos.forEach(function(video) {
+      if (video.srcObject) {
+        video.srcObject.getTracks().forEach(function(track) {
+          track.stop();
+        });
+        video.srcObject = null;
+      }
+    });
+    // Petit delai pour laisser le temps au navigateur de liberer la camera
+    setTimeout(function() {
+      window.location.href = url;
+    }, 300);
+
+  scanner.clear().then(arreterCameraEtPartir).catch(arreterCameraEtPartir);
 }
 
     scanner.render(onScanSuccess);
