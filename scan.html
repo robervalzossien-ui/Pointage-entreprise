@@ -14,37 +14,36 @@
   <div id="reader" style="width:100%; max-width:400px; margin:0 auto;"></div>
 
   <script>
-    var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh3V9O3MZqaERXUClLoZD_mMTLfVXN1I5NHpFfmQQRcp_cYDsmYjylQ6rIunyHMsgL/exec";
+    var APPS_SCRIPT_URL = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbyh3V9O3MZqaERXUClLoZD_mMTLfVXN1I5NHpFfmQQRcp_cYDsmYjylQ6rIunyHMsgL/exec";
     var DEVICE_KEY = "farh123";
     var dejaTraite = false;
 
-   var scanner = new Html5QrcodeScanner("reader", { fps: 10 });
-function onScanSuccess(idEmploye) {
-  if (dejaTraite) { return; }
-  dejaTraite = true;
+    var scanner = new Html5QrcodeScanner("reader", { fps: 10 });
 
-  var url = APPS_SCRIPT_URL + "?id=" + encodeURIComponent(idEmploye) + "&device_key=" + encodeURIComponent(DEVICE_KEY);
+    function onScanSuccess(idEmploye) {
+      if (dejaTraite) { return; }
+      dejaTraite = true;
 
-  function arreterCameraEtPartir() {
-    // Coupe manuellement tous les flux video actifs, au cas ou clear() ne l'ait pas fait
-    var videos = document.querySelectorAll("video");
-    videos.forEach(function(video) {
-      if (video.srcObject) {
-        video.srcObject.getTracks().forEach(function(track) {
-          track.stop();
+      var url = APPS_SCRIPT_URL + "?id=" + encodeURIComponent(idEmploye) + "&device_key=" + encodeURIComponent(DEVICE_KEY);
+
+      function arreterCameraEtPartir() {
+        var videos = document.querySelectorAll("video");
+        videos.forEach(function(video) {
+          if (video.srcObject) {
+            video.srcObject.getTracks().forEach(function(track) {
+              track.stop();
+            });
+            video.srcObject = null;
+          }
         });
-        video.srcObject = null;
+        setTimeout(function() {
+          window.location.href = url;
+        }, 300);
       }
-    });
-    // Petit delai pour laisser le temps au navigateur de liberer la camera
-    setTimeout(function() {
-      window.location.href = url;
-    }, 300);
 
-  scanner.clear().then(arreterCameraEtPartir).catch(arreterCameraEtPartir);
-}
-  
-}
+      scanner.clear().then(arreterCameraEtPartir).catch(arreterCameraEtPartir);
+    }
+
     scanner.render(onScanSuccess);
   </script>
 </body>
