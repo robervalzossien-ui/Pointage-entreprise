@@ -7,22 +7,27 @@
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     body { font-family: Arial; text-align: center; padding: 20px; }
+    #log { font-size: 13px; color: #555; margin-top: 15px; }
   </style>
 </head>
 <body>
   <h2>Scanner de pointage</h2>
   <div id="reader" style="width:100%; max-width:400px; margin:0 auto;"></div>
+  <div id="log">En attente...</div>
 
   <script>
     var APPS_SCRIPT_URL = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbyh3V9O3MZqaERXUClLoZD_mMTLfVXN1I5NHpFfmQQRcp_cYDsmYjylQ6rIunyHMsgL/exec";
     var DEVICE_KEY = "farh123";
     var dejaTraite = false;
+    var compteur = 0;
+    var logDiv = document.getElementById("log");
 
     var scanner = new Html5QrcodeScanner("reader", { fps: 10 });
 
     function onScanSuccess(idEmploye) {
       if (dejaTraite) { return; }
       dejaTraite = true;
+      logDiv.innerText = "QR DETECTE : " + idEmploye;
 
       var url = APPS_SCRIPT_URL + "?id=" + encodeURIComponent(idEmploye) + "&device_key=" + encodeURIComponent(DEVICE_KEY);
 
@@ -30,21 +35,22 @@
         var videos = document.querySelectorAll("video");
         videos.forEach(function(video) {
           if (video.srcObject) {
-            video.srcObject.getTracks().forEach(function(track) {
-              track.stop();
-            });
+            video.srcObject.getTracks().forEach(function(track) { track.stop(); });
             video.srcObject = null;
           }
         });
-        setTimeout(function() {
-          window.location.href = url;
-        }, 300);
+        setTimeout(function() { window.location.href = url; }, 300);
       }
 
       scanner.clear().then(arreterCameraEtPartir).catch(arreterCameraEtPartir);
     }
 
-    scanner.render(onScanSuccess);
+    function onScanFailure(erreur) {
+      compteur++;
+      logDiv.innerText = "Analyse en cours... (" + compteur + " images testees)";
+    }
+
+    scanner.render(onScanSuccess, onScanFailure);
   </script>
 </body>
 </html>
